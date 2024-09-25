@@ -1,0 +1,346 @@
+\documentclass[10pt]{article}
+\usepackage{bookmark}
+% Formato extenso: report
+
+% Formato corto: article
+
+% Esto es para que el LaTeX sepa que el texto está en español:
+\usepackage[spanish]{babel}
+
+\usepackage{amsmath, amsthm, amsfonts,amssymb}
+
+% Bórrame si quieres:
+\usepackage{multicol}
+
+% Referencias
+\usepackage{hyperref}
+
+% Paquete para escribir código
+\usepackage{listings}
+\lstset{basicstyle=\footnotesize\ttfamily,breaklines=true}
+\usepackage{alltt}
+
+\usepackage{tikz}
+% Paquete para incluir imágenes
+\usepackage{graphicx}
+
+% Paquete para incluir varias imágenes en una
+\usepackage{subfig}
+
+% para poder fijar las imágenes ([H])
+\usepackage{float}
+
+% para agregar opciones al enumerate
+\usepackage{enumerate}
+
+
+% Teoremas
+\newtheorem{thm}{Teorema}[section]
+\newtheorem{cor}[thm]{Corolario}
+\newtheorem{lem}[thm]{Lema}
+\newtheorem{prop}[thm]{Proposición}
+\theoremstyle{definition}
+\newtheorem{defn}[thm]{Definición}
+\theoremstyle{remark}
+\newtheorem{rem}[thm]{Observación}
+\theoremstyle{definition}
+\newtheorem{prob}{Problema}
+\numberwithin{equation}{prob}
+
+% Calculus symbols
+\newcommand{\pd}[2]{\frac{\partial #1}{ \partial #2}}   % First partial derivative command
+\newcommand{\td}[2]{\frac{\mathrm{d} #1}{ \mathrm{d} #2}}
+\newcommand{\pdd}[2]{\frac{\partial^2 #1}{ \partial #2 ^2}}   % Second partial derivative command
+\newcommand{\pddc}[3]{\frac{\partial^2 #1}{ \partial #2 \partial #3}}   % Second partial derivative command
+
+% Continuum mechanics & FEM symbols
+\def\sca   #1{\mbox{\rm{#1}}{}}
+\def\mat   #1{\mbox{\boldmath $\mathsf #1$}}
+\def\vec   #1{\mbox{\boldmath $#1$}{}}
+\def\ten   #1{\mbox{\boldmath $#1$}{}}
+\def\ltr   #1{\mbox{\sf{#1}}}
+\def\bltr  #1{\mbox{\sffamily{\bfseries{{#1}}}}}
+
+% math operators and symbols
+\DeclareMathOperator{\dive}{div}
+\DeclareMathOperator{\trace}{trace}
+\DeclareMathOperator{\tr}{tr}
+\DeclareMathOperator{\symm}{symm}
+\DeclareMathOperator{\sk}{skew}
+\DeclareMathOperator{\grad}{grad}
+\DeclareMathOperator{\Grad}{Grad}
+\DeclareMathOperator{\curl}{curl}
+\DeclareMathOperator{\Curl}{Curl}
+\def\R{\mbox{\(\mathbb{R}\)}}
+\def\dx{\mbox{\(\,\mathrm{d}x\)}}
+
+
+\usepackage{geometry}
+\geometry{left=2.5cm, right=2.5cm, top=2cm, bottom=3cm}
+
+\usepackage{makeidx}
+\makeindex
+
+
+\begin{document}
+
+\begin{sloppypar}
+
+\end{sloppypar}
+
+\begin{titlepage}
+	%%%%% NO MODIFICAR
+	\begin{figure}
+		\begin{minipage}{4cm}
+			\includegraphics[width=0.9\textwidth]{./figures/logo}
+		\end{minipage}
+		\begin{minipage}{11cm}
+			\vspace{4mm}
+			{\sc UNIVERSIDAD DE VALPARAÍSO}\\
+			Escuela de Ingeniería Civil Biomédica\\
+			{\bf CBM524 - Robótica Médica}\\
+			\vspace{0mm}
+			\hrulefill
+		\end{minipage}
+	\end{figure}
+	\phantom{""}\vspace{60mm}
+
+
+	%%%%% MODIFICAR
+	\begin{center}
+		\Huge{\textbf{Proyecto 1}}\vspace{95mm}\\
+		\raggedleft \Large{Jorge Gonzalo Alejandro Alcaíno Brevis}\\
+		\raggedleft \Large{Maximiliano Antonio Gaete Pizarro}\\
+		\raggedleft \Large{Natalia Muñoz}\\
+	\end{center}
+
+
+\end{titlepage}
+
+\section{Considere un robot articulado con 3 grados de libertad}
+
+\begin{center}
+\begin{tikzpicture}
+
+	% Draw the first link (L1) behind the shapes
+	\draw[thick,blue, line width=4pt] (0,0.5) -- (0,3.5);
+	\node at (-0.5,2) {$L1$};
+	
+	% Draw the second link (L2) behind the shapes
+	\draw[thick,blue, line width=4pt] (0,3.8) -- (4,4);
+	\node at (2,4.5) {$L2$};
+	
+	% Draw the third link (L3) behind the shapes
+	\draw[thick,blue, line width=4pt] (4.5,4) -- (7,4.3);
+	\node at (5.8,4.7) {$L3$};
+	
+	% Draw the base (two touching inverted triangles for q1, stylized as in the image)
+	\draw[fill=blue!60, thick] (-1,-1) -- (1,-1) -- (0,0.2) -- cycle;  % Upper triangle
+	\draw[fill=blue!60, thick] (-1,1) -- (1,1) -- (0,-0.2) -- cycle;   % Lower triangle
+	\node at (0,-1.5) {$q1$};
+	
+	% Draw the first joint (circle for q2)
+	\draw[fill=blue!60] (0,3.5) circle (0.5);
+	\node at (0,4.5) {$q2$};
+	
+	% Draw the second joint (circle for q3)
+	\draw[fill=blue!60] (4,4) circle (0.5);
+	\node at (4,5) {$q3$};
+	
+	% Draw the end-effector (open shape)
+	\draw[thick,blue, line width=4pt] (7,4.3) -- (7.5,5) -- (8,4.3) -- cycle;
+	
+\end{tikzpicture}
+\end{center}
+
+\subsection{Parámetros de Denavit-Hartenberg}
+
+Dado el brazo robótico con tres eslabones, los parámetros D-H son:
+
+\[
+\begin{array}{c|c|c|c|c}
+\text{Eslabón } i & a_i & \alpha_i & d_i & \theta_i \\
+\hline
+1 & 0 & 90^\circ & L_1 & \theta_1 \\
+2 & L_2 & 0^\circ & 0 & \theta_2 \\
+3 & L_3 & 0^\circ & 0 & \theta_3 \\
+\end{array}
+\]
+
+\subsection{Matrices de transformación homogénea \texorpdfstring{$A_i$}{Ai} para cada eslabón}
+
+La matriz de transformación homogénea estándar entre el eslabón \( i-1 \) y el eslabón \( i \) es:
+
+\[
+A_i = \begin{bmatrix}
+\cos\theta_i & -\sin\theta_i \cos\alpha_i & \sin\theta_i \sin\alpha_i & a_i \cos\theta_i \\
+\sin\theta_i & \cos\theta_i \cos\alpha_i & -\cos\theta_i \sin\alpha_i & a_i \sin\theta_i \\
+0 & \sin\alpha_i & \cos\alpha_i & d_i \\
+0 & 0 & 0 & 1 \\
+\end{bmatrix}
+\]
+
+\subsubsection{\texorpdfstring{Matriz $A_1$:}{Matriz A1:}}
+
+Dado que \( \alpha_1 = +90^\circ \):
+
+\[
+\cos\alpha_1 = 0, \quad \sin\alpha_1 = 1
+\]
+
+Entonces:
+
+\[
+A_1 = \begin{bmatrix}
+\cos\theta_1 & 0 & \sin\theta_1 & 0 \\
+\sin\theta_1 & 0 & -\cos\theta_1 & 0 \\
+0 & 1 & 0 & L_1 \\
+0 & 0 & 0 & 1 \\
+\end{bmatrix}
+\]
+
+\subsubsection{\texorpdfstring{Matriz $A_2$:}{Matriz A2:}}
+
+Con \( \alpha_2 = 0^\circ \):
+
+\[
+\cos\alpha_2 = 1, \quad \sin\alpha_2 = 0
+\]
+
+Entonces:
+
+\[
+A_2 = \begin{bmatrix}
+\cos\theta_2 & -\sin\theta_2 & 0 & L_2 \cos\theta_2 \\
+\sin\theta_2 & \cos\theta_2 & 0 & L_2 \sin\theta_2 \\
+0 & 0 & 1 & 0 \\
+0 & 0 & 0 & 1 \\
+\end{bmatrix}
+\]
+
+\subsubsection{\texorpdfstring{Matriz \(A_3\):}{Matriz A3:}}
+
+Con \( \alpha_3 = 0^\circ \):
+
+\[
+\cos\alpha_3 = 1, \quad \sin\alpha_3 = 0
+\]
+
+Entonces:
+
+\[
+A_3 = \begin{bmatrix}
+\cos\theta_3 & -\sin\theta_3 & 0 & L_3 \cos\theta_3 \\
+\sin\theta_3 & \cos\theta_3 & 0 & L_3 \sin\theta_3 \\
+0 & 0 & 1 & 0 \\
+0 & 0 & 0 & 1 \\
+\end{bmatrix}
+\]
+
+\subsection{Cálculo de las posiciones de los eslabones}
+
+\subsubsection{Posición del origen del sistema base (Eslabón 0):}
+
+El sistema base está en el origen, por lo que:
+
+\[
+(x_0, y_0, z_0) = (0, 0, 0)
+\]
+
+\subsubsection{Posición del Eslabón 1:}
+
+La matriz \( A_1 \) ya está calculada. La posición del eslabón 1 es el vector de traslación en \( A_1 \):
+
+\[
+\begin{bmatrix}
+x_1 \\
+y_1 \\
+z_1 \\
+1 \\
+\end{bmatrix} = A_1 \times \begin{bmatrix}
+0 \\
+0 \\
+0 \\
+1 \\
+\end{bmatrix} = \begin{bmatrix}
+0 \\
+0 \\
+L_1 \\
+1 \\
+\end{bmatrix}
+\]
+
+Por lo tanto:
+
+\[
+(x_1, y_1, z_1) = (0, 0, L_1)
+\]
+
+\subsubsection{Posición del Eslabón 2:}
+
+Primero multiplicamos \( A_1 \) y \( A_2 \):
+
+\[
+T_0^2 = A_1 \times A_2
+\]
+
+Calculando \( T_0^2 \), obtenemos:
+
+\[
+T_0^2 = \begin{bmatrix}
+\cos\theta_1 \cos\theta_2 & -\cos\theta_1 \sin\theta_2 & \sin\theta_1 & \cos\theta_1 L_2 \cos\theta_2 \\
+\sin\theta_1 \cos\theta_2 & -\sin\theta_1 \sin\theta_2 & -\cos\theta_1 & \sin\theta_1 L_2 \cos\theta_2 \\
+\sin\theta_2 & \cos\theta_2 & 0 & L_1 + L_2 \sin\theta_2 \\
+0 & 0 & 0 & 1 \\
+\end{bmatrix}
+\]
+
+La posición \( (x_2, y_2, z_2) \) es el vector de traslación en \( T_0^2 \):
+
+
+\[
+\begin{aligned}
+x_2 &= \cos\theta_1 \cdot L_2 \cos\theta_2 \\
+y_2 &= \sin\theta_1 \cdot L_2 \cos\theta_2 \\
+z_2 &= L_1 + L_2 \sin\theta_2 \\
+\end{aligned}
+\]
+
+
+\subsubsection{Posición del Eslabón 3:}
+
+Multiplicamos \( T_0^2 \) y \( A_3 \):
+
+\[
+T_0^3 = T_0^2 \times A_3
+\]
+
+Después de la multiplicación, obtenemos:
+
+\[
+T_0^3 = \begin{bmatrix}
+\cos\theta_1 \cos(\theta_2 + \theta_3) & -\cos\theta_1 \sin(\theta_2 + \theta_3) & \sin\theta_1 & x_3 \\
+\sin\theta_1 \cos(\theta_2 + \theta_3) & -\sin\theta_1 \sin(\theta_2 + \theta_3) & -\cos\theta_1 & y_3 \\
+\sin(\theta_2 + \theta_3) & \cos(\theta_2 + \theta_3) & 0 & z_3 \\
+0 & 0 & 0 & 1 \\
+\end{bmatrix}
+\]
+
+La posición \( (x_3, y_3, z_3) \) es:
+
+
+\[
+\begin{aligned}
+x_3 &= \cos\theta_1 \left( L_2 \cos\theta_2 + L_3 \cos(\theta_2 + \theta_3) \right) \\
+y_3 &= \sin\theta_1 \left( L_2 \cos\theta_2 + L_3 \cos(\theta_2 + \theta_3) \right) \\
+z_3 &= L_1 + L_2 \sin\theta_2 + L_3 \sin(\theta_2 + \theta_3) \\
+\end{aligned}
+\]
+
+\section{Ajuste los parámetros D-H según las medidas reales del robot que eligieron en laboratorio}
+
+\section{Elabore un código Python que permita determinar las coordenadas p(x,y,z) del efector, en función de q1, q2 y q3}
+
+\end{document}
+
+

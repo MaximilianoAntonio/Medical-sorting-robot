@@ -2,8 +2,8 @@ import os
 import dynamixel_sdk as dxl  # Importa la biblioteca DynamixelSDK
 
 # Configuración de la comunicación
-DEVICENAME = '/dev/ttyUSB0'  # Cambia según tu sistema operativo. En Windows sería algo como COM1
-BAUDRATE = 1000000  # Baudrate típico para AX-12A
+DEVICENAME = 'COM15'  # Cambia según tu sistema operativo. En Windows sería algo como COM1
+BAUDRATE = 9600  # Baudrate típico para AX-12A
 PROTOCOL_VERSION = 1.0  # AX-12A usa el protocolo 1.0
 DXL_ID_1 = 1  # ID del primer servo
 DXL_ID_2 = 2  # ID del segundo servo
@@ -16,10 +16,18 @@ ADDR_MX_PRESENT_POSITION = 36
 TORQUE_ENABLE = 1
 TORQUE_DISABLE = 0
 DXL_MOVING_STATUS_THRESHOLD = 10  # Umbral de movimiento
+ADDR_MX_MOVING_SPEED = 32  # Dirección de control para la velocidad de movimiento
 
 # Definir límites de ángulo (en grados)
 MIN_ANGLE = -60
 MAX_ANGLE = 60
+
+
+# Ángulos deseados para cada servo
+A1 = 0
+A2 = -35
+A3 = -35
+
 
 # Inicializa el puerto
 portHandler = dxl.PortHandler(DEVICENAME)
@@ -76,14 +84,30 @@ def move_servo(dxl_id, angle):
     else:
         print(f"Servo {dxl_id} movido a {angle} grados")
 
-# Mover el primer servo a 0 grados
-move_servo(DXL_ID_1, 0)
 
-# Mover el segundo servo a 30 grados
-move_servo(DXL_ID_2, 30)
+# Función para ajustar la velocidad de torque en un servo
+def set_moving_speed(dxl_id, speed):
+    dxl_comm_result, dxl_error = packetHandler.write2ByteTxRx(portHandler, dxl_id, ADDR_MX_MOVING_SPEED, speed)
+    if dxl_comm_result != dxl.COMM_SUCCESS:
+        print(f"Error de comunicación en servo {dxl_id}: {packetHandler.getTxRxResult(dxl_comm_result)}")
+    elif dxl_error != 0:
+        print(f"Error de paquete en servo {dxl_id}: {packetHandler.getRxPacketError(dxl_error)}")
+    else:
+        print(f"Velocidad de movimiento ajustada en servo {dxl_id} a {speed}")
 
-# Mover el tercer servo a -45 grados
-move_servo(DXL_ID_3, -45)
+
+set_moving_speed(DXL_ID_1, 50)
+set_moving_speed(DXL_ID_2, 50)
+set_moving_speed(DXL_ID_3, 50)
+
+# Mover el primer servo 
+move_servo(DXL_ID_1, A1)
+
+# Mover el segundo servo 
+move_servo(DXL_ID_2, A2)
+
+# Mover el tercer servo 
+move_servo(DXL_ID_3, A3)
 
 # Función para deshabilitar el torque cuando termines
 def disable_torque(dxl_id):
@@ -95,10 +119,9 @@ def disable_torque(dxl_id):
     else:
         print(f"Torque deshabilitado en servo {dxl_id}")
 
-# Deshabilitar el torque en los tres servos cuando termines
+'''
 disable_torque(DXL_ID_1)
 disable_torque(DXL_ID_2)
 disable_torque(DXL_ID_3)
-
-# Cierra el puerto
+'''
 portHandler.closePort()

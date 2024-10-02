@@ -24,9 +24,9 @@ MAX_ANGLE = 60
 
 
 # Ángulos deseados para cada servo
-A1 = 0
-A2 = -35
-A3 = -35
+A1 = 38.05
+A2 = 3.74
+A3 = -3.98
 
 
 # Inicializa el puerto

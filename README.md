@@ -1,4 +1,3 @@
-```markdown
 # Medical Sorting Robot (3 Degrees of Freedom - 3DoF)
 
 ## Overview
@@ -76,9 +75,3 @@ You can showcase your robot in action by embedding a video link below. Replace `
 - Enhance the sorting algorithm for handling more complex tasks.
 - Integrate advanced machine learning models for improved detection and decision-making.
 
-## License
-This project is licensed under the MIT License. See the LICENSE file for further details.
-
----
-Feel free to contribute to this project by submitting issues or pull requests!
-```

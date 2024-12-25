@@ -66,9 +66,9 @@ This project involves the design and implementation of a robotic arm with three 
 - **Control brazo.py:** Utility script for servo calibration and testing.
 
 ## Video Demonstration
-You can showcase your robot in action by embedding a video link below. Replace `your_video_id` with the YouTube video ID of your demonstration:
 
-[![Watch the Robot in Action]]([https://www.youtube.com/watch?v=your_video_id](https://www.youtubeeducation.com/watch?v=Cd75hz88lqM))
+[![Watch the Robot in Action](https://img.youtube.com/vi/your_video_id/0.jpg)](https://www.youtube.com/watch?v=Cd75hz88lqM)
+
 
 ## Future Improvements
 - Expand object detection capabilities to include texture analysis.
